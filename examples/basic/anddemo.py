@@ -11,6 +11,7 @@ import pymachinetalk.halremote as halremote
 
 class BasicClass():
     def __init__(self):
+        # launcher_sd = ServiceDiscovery(service_type="_launcher._sub._machinekit._tcp", debug=True)
         launcher_sd = ServiceDiscovery(service_type="_launcher._sub._machinekit._tcp")
         launcher_sd.on_discovered.append(self.service_discovered)
         launcher_sd.on_disappeared.append(self.service_disappeared)
@@ -20,10 +21,10 @@ class BasicClass():
         self.halrcompReady = False
         self.halrcmdReady = False
         halrcomp = halremote.RemoteComponent('anddemo')
-        halrcomp.newpin('button0', halremote.HAL_BIT, halremote.HAL_OUT)
-        halrcomp.newpin('button1', halremote.HAL_BIT, halremote.HAL_OUT)
-        halrcomp.newpin('led', halremote.HAL_BIT, halremote.HAL_IN)
-        halrcomp.no_create = True
+        self.but0 = halrcomp.newpin('button0', halremote.HAL_BIT, halremote.HAL_OUT)
+        self.but1 = halrcomp.newpin('button1', halremote.HAL_BIT, halremote.HAL_OUT)
+        self.led = halrcomp.newpin('led', halremote.HAL_BIT, halremote.HAL_IN)
+        # halrcomp.no_create = True
         self.halrcomp = halrcomp
 
     def start_sd(self, uuid):
@@ -62,6 +63,15 @@ class BasicClass():
     def start_halrcomp(self):
         print('connecting rcomp %s' % self.halrcomp.name)
         self.halrcomp.ready()
+        print('waiting for component connected')
+        self.halrcomp.wait_connected()
+        print('remote component connected')
+        self.but0.set(True)
+        for i in range(0,10):
+            self.but1.set(not self.led.get())
+            time.sleep(1)
+            print self.led.get()
+
 
     def stop(self):
         self.halrcomp.stop()
