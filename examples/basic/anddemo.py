@@ -29,7 +29,7 @@ class BasicClass():
 
     def start_sd(self, uuid):
         halrcmd_sd = ServiceDiscovery(service_type="_halrcmd._sub._machinekit._tcp", uuid=uuid)
-        halrcmd_sd.on_discovered.append(self.halrcmd_discovered)
+        halrcmd_sd.on_discovered.append(self.halrcmd_discovered) # start service discover
         halrcmd_sd.start()
         #halrcmd_sd.disappered_callback = disappeared
         #self.halrcmd_sd = halrcmd_sd
@@ -44,7 +44,10 @@ class BasicClass():
 
     def service_discovered(self, data):
         print("discovered %s %s %s" % (data.name, data.dsn, data.uuid))
-        self.start_sd(data.uuid)
+        # set uuid for interlaken.local
+        uuid = "a09a5a04-f7ac-40e9-b898-2d41f391f68e"
+        if (data.uuid == uuid):
+            self.start_sd(data.uuid)
 
     def halrcmd_discovered(self, data):
         print("discovered %s %s" % (data.name, data.dsn))
